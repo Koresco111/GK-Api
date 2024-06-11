@@ -1,7 +1,7 @@
 const { Sequelize } = require("sequelize");
 const jwt = require("jsonwebtoken");
 const User = require("./models/User");
-
+require("dotenv").config();
 const sequelize = new Sequelize({
   dialect: "mysql",
   host: process.env.DATABASE_HOST,

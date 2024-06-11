@@ -43,6 +43,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config.js"); // Import the Sequelize instance
 const CryptoJS = require("crypto-js");
+require("dotenv").config();
 
 const User = sequelize.define(
   "User",
@@ -73,17 +74,25 @@ const User = sequelize.define(
     timestamps: true, // Automatically adds createdAt and updatedAt fields
     underscored: true, // Converts camelCase column names to snake_case
     hooks: {
-      beforeSave: async (user, options) => {
+      beforeSave: (user, options) => {
         if (user.changed("password")) {
           const encryptedPassword = CryptoJS.AES.encrypt(
             user.password,
             process.env.SECRET
-          ).toString(); // Replace 'your_secret_key' with your actual secret key
+          ).toString();
           user.password = encryptedPassword;
         }
       },
     },
   }
 );
+
+User.prototype.validPassword = function (password) {
+  const decryptedPassword = CryptoJS.AES.decrypt(
+    this.password,
+    process.env.SECRET
+  ).toString(CryptoJS.enc.Utf8);
+  return password === decryptedPassword;
+};
 
 module.exports = User;

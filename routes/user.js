@@ -50,6 +50,7 @@
 
 // module.exports = router;
 const express = require("express");
+require("dotenv").config();
 const router = express.Router();
 const User = require("../models/User.js"); // Update the model import
 const adminMiddleware = require("../middleware/AdminMiddleware");

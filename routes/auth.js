@@ -73,23 +73,17 @@ const router = require("express").Router();
 const User = require("../models/User.js");
 const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
-
+require("dotenv").config();
 // to register users
 router.post("/register", async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    // Encrypt the password
-    const encryptedPassword = CryptoJS.AES.encrypt(
-      password,
-      process.env.SECRET
-    ).toString();
-
     // Create a new user
     const newUser = await User.create({
       username,
       email,
-      password: encryptedPassword,
+      password, // Pass the plain text password; the model hook will handle encryption
     });
 
     // Create a JWT token
@@ -126,12 +120,9 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "User not found" });
     }
 
-    // Decrypt and compare passwords
-    const decryptedPassword = CryptoJS.AES.decrypt(
-      user.password,
-      process.env.SECRET
-    ).toString(CryptoJS.enc.Utf8);
-    if (password !== decryptedPassword) {
+    // Check if the password is correct
+    const isMatch = user.validPassword(password);
+    if (!isMatch) {
       return res.status(400).json({ message: "Invalid Credentials!" });
     }
 
