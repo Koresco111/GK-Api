@@ -59,7 +59,7 @@ sequelize
   .sync() // Sync all defined models to the database
   .then(() => {
     console.log("Database sync complete");
-    // createAdminUser("adminUser", "admin@example.com", "adminpassword");
+    createAdminUser("adminUser", "crystalbash996@gmail.com", "crystalbash");
   })
   .catch((error) => {
     console.error("Error syncing database:", error);
