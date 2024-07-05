@@ -1,32 +1,5 @@
-// const mongoose = require("mongoose");
-
-// const RecordSchema = new mongoose.Schema(
-//   {
-//     tallyNum: {
-//       type: String,
-//       required: true,
-//     },
-//     photo: {
-//       type: String,
-//       required: false,
-//     },
-//     plateNum: {
-//       type: String,
-//       required: true,
-//     },
-//     checkout: {
-//       type: Boolean,
-//       default: false,
-//     },
-//   },
-//   { timestamps: true }
-// );
-
-// module.exports = mongoose.model("Record", RecordSchema);
-// models/Record.js
-
 const { DataTypes } = require("sequelize");
-const sequelize = require("../config.js"); // Import the Sequelize instance
+const sequelize = require("../config.js"); 
 
 const Record = sequelize.define(
   "Record",
@@ -37,7 +10,7 @@ const Record = sequelize.define(
     },
     photo: {
       type: DataTypes.STRING,
-      allowNull: true, // You can specify allowNull as true for optional fields
+      allowNull: true, 
     },
     plateNum: {
       type: DataTypes.STRING,
@@ -45,13 +18,12 @@ const Record = sequelize.define(
     },
     checkout: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false, // Sequelize uses defaultValue instead of default
+      defaultValue: false, 
     },
   },
   {
-    timestamps: true, // Automatically adds createdAt and updatedAt fields
-    underscored: true, // Converts camelCase column names to snake_case
-    // Other options like tableName, indexes, etc.
+    timestamps: true, 
+    underscored: true,
   }
 );
 
