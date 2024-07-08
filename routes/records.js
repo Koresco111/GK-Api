@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Record = require("../models/Record.js"); // Update the model import
+const Record = require("../models/Record.js");
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
@@ -17,14 +17,13 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-
 router.post(
   "/create",
   authMiddleware,
   upload.single("photo"),
   async (req, res) => {
     const { tallyNum, plateNum } = req.body;
-    const photo = req.file ? req.file.path : null; 
+    const photo = req.file ? req.file.path : null;
 
     try {
       const newRecord = await Record.create({
@@ -42,7 +41,6 @@ router.post(
   }
 );
 
-
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const records = await Record.findAll();
@@ -53,7 +51,6 @@ router.get("/", authMiddleware, async (req, res) => {
   }
 });
 
-
 router.delete("/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
 
@@ -61,7 +58,6 @@ router.delete("/:id", authMiddleware, async (req, res) => {
     const record = await Record.findByPk(id);
     if (!record) return res.status(404).json({ message: "Record not found" });
 
-    
     if (record.photo) {
       const photoPath = path.join(__dirname, "..", record.photo);
       if (fs.existsSync(photoPath)) {
@@ -74,6 +70,48 @@ router.delete("/:id", authMiddleware, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error deleting record" });
+  }
+});
+
+// Route to get all records with checkout = false
+router.get("/checkout/false", authMiddleware, async (req, res) => {
+  try {
+    const records = await Record.findAll({ where: { checkout: false } });
+    res.status(200).json(records);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching records" });
+  }
+});
+
+// Route to get all records with checkout = true
+router.get("/checkout/true", authMiddleware, async (req, res) => {
+  try {
+    const records = await Record.findAll({ where: { checkout: true } });
+    res.status(200).json(records);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching records" });
+  }
+});
+
+// New POST route to set the checkout field to true
+router.post("/:id/checkout", authMiddleware, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const record = await Record.findByPk(id);
+    if (!record) {
+      return res.status(404).json({ message: "Record not found" });
+    }
+
+    record.checkout = true;
+    await record.save();
+
+    res.status(200).json({ message: "Checkout updated successfully", record });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error updating checkout" });
   }
 });
 
